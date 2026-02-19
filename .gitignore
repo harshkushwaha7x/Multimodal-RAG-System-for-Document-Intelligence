@@ -1,0 +1,76 @@
+# Byte-compiled
+__pycache__/
+*.py[cod]
+*$py.class
+
+# C extensions
+*.so
+
+# Distribution
+dist/
+build/
+*.egg-info/
+.eggs/
+
+# Virtual environment
+venv/
+.venv/
+env/
+ENV/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Environment
+.env
+.env.local
+*.env
+
+# Logs
+logs/
+*.log
+
+# Data (raw and processed)
+data/raw/*
+data/processed/*
+!data/raw/.gitkeep
+!data/processed/.gitkeep
+
+# Artifacts
+artifacts/models/*
+artifacts/embeddings/*
+artifacts/faiss/*
+!artifacts/models/.gitkeep
+!artifacts/embeddings/.gitkeep
+!artifacts/faiss/.gitkeep
+
+# MLflow
+mlruns/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+
+# Model files
+*.pt
+*.pth
+*.bin
+*.onnx
+
+# Large files
+*.faiss
+*.pkl
+*.model

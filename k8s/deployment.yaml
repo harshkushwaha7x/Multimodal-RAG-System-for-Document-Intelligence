@@ -1,0 +1,201 @@
+# Kubernetes Deployment for Multimodal RAG System
+# GPU-enabled deployment with ingress
+
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: rag-system
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: rag-config
+  namespace: rag-system
+data:
+  LOG_LEVEL: "INFO"
+  EMBEDDING_MODEL: "sentence-transformers/all-MiniLM-L6-v2"
+  LLM_MODEL: "qwen2"
+
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: rag-secrets
+  namespace: rag-system
+type: Opaque
+stringData:
+  JWT_SECRET_KEY: "change-this-in-production"
+  ADMIN_API_KEY: "change-this-in-production"
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rag-api
+  namespace: rag-system
+  labels:
+    app: rag-api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: rag-api
+  template:
+    metadata:
+      labels:
+        app: rag-api
+    spec:
+      containers:
+      - name: rag-api
+        image: your-registry/multimodal-rag:latest
+        command: ["python", "-m", "src.api.server", "--host", "0.0.0.0"]
+        ports:
+        - containerPort: 8000
+        envFrom:
+        - configMapRef:
+            name: rag-config
+        - secretRef:
+            name: rag-secrets
+        resources:
+          requests:
+            memory: "4Gi"
+            cpu: "1"
+            nvidia.com/gpu: 1
+          limits:
+            memory: "8Gi"
+            cpu: "2"
+            nvidia.com/gpu: 1
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8000
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 8000
+          initialDelaySeconds: 10
+          periodSeconds: 5
+        volumeMounts:
+        - name: index-storage
+          mountPath: /app/artifacts
+      volumes:
+      - name: index-storage
+        persistentVolumeClaim:
+          claimName: rag-index-pvc
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: rag-api
+  namespace: rag-system
+spec:
+  selector:
+    app: rag-api
+  ports:
+  - port: 8000
+    targetPort: 8000
+  type: ClusterIP
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rag-web
+  namespace: rag-system
+  labels:
+    app: rag-web
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: rag-web
+  template:
+    metadata:
+      labels:
+        app: rag-web
+    spec:
+      containers:
+      - name: rag-web
+        image: your-registry/multimodal-rag:latest
+        command: ["python", "-m", "src.web.app"]
+        ports:
+        - containerPort: 7860
+        envFrom:
+        - configMapRef:
+            name: rag-config
+        resources:
+          requests:
+            memory: "4Gi"
+            cpu: "1"
+            nvidia.com/gpu: 1
+          limits:
+            memory: "8Gi"
+            cpu: "2"
+            nvidia.com/gpu: 1
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: rag-web
+  namespace: rag-system
+spec:
+  selector:
+    app: rag-web
+  ports:
+  - port: 7860
+    targetPort: 7860
+  type: ClusterIP
+
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: rag-ingress
+  namespace: rag-system
+  annotations:
+    nginx.ingress.kubernetes.io/proxy-body-size: "100m"
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+spec:
+  ingressClassName: nginx
+  tls:
+  - hosts:
+    - rag.yourdomain.com
+    secretName: rag-tls
+  rules:
+  - host: rag.yourdomain.com
+    http:
+      paths:
+      - path: /api
+        pathType: Prefix
+        backend:
+          service:
+            name: rag-api
+            port:
+              number: 8000
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: rag-web
+            port:
+              number: 7860
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: rag-index-pvc
+  namespace: rag-system
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Gi
+  storageClassName: standard
