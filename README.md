@@ -196,6 +196,3 @@ Response with Citations
 | Reranking Improvement | +15% precision |
 | GPU Memory Usage | ~5 GB |
 
-## License
-
-This project is licensed under the MIT License.
