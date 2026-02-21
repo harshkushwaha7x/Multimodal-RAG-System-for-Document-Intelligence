@@ -1,16 +1,11 @@
-# ============================================================
-# Multimodal RAG — Production Requirements
-# Fully resolved, container-safe, and mutually compatible
-# ============================================================
-
 # -------------------------------
 # Core ML / Deep Learning Stack
 # -------------------------------
 torch==2.1.0
-transformers==4.40.2        # <-- upgraded (required for new tokenizers)
+transformers==4.40.2 
 sentence-transformers==2.6.1
 accelerate==0.25.0
-bitsandbytes>=0.41.0        # <-- for 4-bit quantization
+bitsandbytes>=0.41.0     
 
 # -------------------------------
 # LangChain Ecosystem
@@ -22,7 +17,7 @@ langchain-huggingface==0.0.3
 
 # Must satisfy both transformers + langchain-huggingface
 huggingface-hub>=0.23.0,<1.0.0
-tokenizers>=0.19.1,<0.21.0   # <-- upgraded to satisfy langchain-huggingface
+tokenizers>=0.19.1,<0.21.0  
 
 # -------------------------------
 # Web Interface & API

@@ -195,4 +195,3 @@ Response with Citations
 | Retrieval Method | Hybrid RRF |
 | Reranking Improvement | +15% precision |
 | GPU Memory Usage | ~5 GB |
-
