@@ -195,3 +195,23 @@ Response with Citations
 | Retrieval Method | Hybrid RRF |
 | Reranking Improvement | +15% precision |
 | GPU Memory Usage | ~5 GB |
+
+## License
+
+This project is licensed under the **MIT License** — see [LICENSE](LICENSE).
+
+---
+
+## Contact
+
+**Harsh Kushwaha** — Developer & Maintainer 
+- Portfolio: [https://portfolio-harsh7x.vercel.app/](https://portfolio-harsh7x.vercel.app/) 
+- GitHub: [https://github.com/harshkushwaha7x](https://github.com/harshkushwaha7x)  
+- LinkedIn: [https://linkedin.com/in/harshkushwaha7x](https://www.linkedin.com/in/harsh-kushwaha-7x/)  
+- Email: harshkushwaha4151@gmail.com  
+
+---
+
+<div align="center">
+Made by **Harsh Kushwaha**
+</div>
